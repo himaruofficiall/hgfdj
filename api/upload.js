@@ -27,5 +27,14 @@ export default async function handler(req, res) {
   });
 
   const data = await response.json();
-  res.status(200).json({ url: data?.alias ? `https://${data.alias}` : null });
+
+  // ✅ Cek apakah alias tersedia
+  const alias = data?.alias || (data?.aliases?.[0] ?? null);
+
+  if (alias) {
+    res.status(200).json({ url: `https://${alias}` });
+  } else {
+    console.error('Gagal mendapatkan alias:', data);
+    res.status(500).json({ error: 'Gagal mendapatkan URL dari Vercel' });
+  }
 }
